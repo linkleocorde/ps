@@ -11,6 +11,7 @@ $query = @"
     "Key",
     "Number",
     "Name",
+    "Category.Name",
     "AssetType",
     "Status.Name",
     "Status.RollupState",
@@ -32,7 +33,7 @@ $query = @"
   "find": "EAPP",
   "findin": "Scope.ParentAndUp.Name",
   "where": {
-    "Number": "E-12685"
+    "Number": "E-29718"
   }
 }
 "@

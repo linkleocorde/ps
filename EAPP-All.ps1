@@ -19,6 +19,7 @@ $dtE = New-Object System.Data.DataTable "EAPP"
 [void]$dtE.Columns.Add("Number",[string])
 [void]$dtE.Columns.Add("Name",[string])
 [void]$dtE.Columns.Add("AssetType",[string])
+[void]$dtE.Columns.Add("Category",[string])
 [void]$dtE.Columns.Add("Status",[string])
 [void]$dtE.Columns.Add("State",[string])
 [void]$dtE.Columns.Add("ParentNumber",[string])
@@ -35,9 +36,9 @@ $dtE = New-Object System.Data.DataTable "EAPP"
 [void]$dtE.Columns.Add("IsDeleted",[string])
 
 
-$types = ('Epic','Story','Defect')
+$types = @{Epic = '"Category.Name",'; Story = '"AssetType",'; Defect = '"AssetType",'}
 
-foreach($t in $types){
+foreach($t in $types.keys){
 
 $qEpics = @"
 {
@@ -47,6 +48,7 @@ $qEpics = @"
     "Number",
     "Name",
     "AssetType",
+    $($types.$t)    
     "Status.Name",
     "Status.RollupState",
     "Super.Number",
@@ -68,6 +70,7 @@ $qEpics = @"
   "findin": "Scope.ParentAndUp.Name"
 }
 "@
+#write-host $qEpics}
 
 #Run query on the API
 $rEpics = Invoke-RestMethod -Uri $PostUri -Body $qEpics -Headers $reqHeaders -Method POST -ContentType 'application/json'
@@ -79,6 +82,7 @@ foreach($rw in $rEpics[0]){
     $nre.Number = $rw."Number"
     $nre.Name = $rw."Name"
     $nre.AssetType = $rw."AssetType"
+    $nre.Category = $rw."Category.Name"
     $nre.Status = $rw."Status.Name"
     $nre.State = $rw."Status.RollupState"
     $nre.ParentNumber = $rw."Super.Number"
