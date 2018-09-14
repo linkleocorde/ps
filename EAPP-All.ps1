@@ -9,7 +9,7 @@ $reqHeaders.Add("Authorization", "Bearer 1.FunS5vVyUg1pF0KfuiAuTg1CQ7Y=")
 $PostUri = 'https://www10.v1host.com/NIKE01a/query.v1'
 
 #Send to file
-$rptEpics = 'C:\Users\lleoco\documents\sandbox\Epics.csv'
+$rptEpics = 'C:\Users\lleoco\Documents\My Tableau Repository\Datasources\EAPP-All.csv'
 
 $dtE = New-Object System.Data.DataTable "EAPP"
 
@@ -25,6 +25,7 @@ $dtE = New-Object System.Data.DataTable "EAPP"
 [void]$dtE.Columns.Add("ParentNumber",[string])
 [void]$dtE.Columns.Add("ParentName",[string])
 [void]$dtE.Columns.Add("ParentType",[string])
+[void]$dtE.Columns.Add("ParentCategory",[string])
 [void]$dtE.Columns.Add("Scope",[string])
 [void]$dtE.Columns.Add("ParentScope",[string])
 [void]$dtE.Columns.Add("GrandparentScope",[string])
@@ -48,14 +49,13 @@ $qEpics = @"
     "Number",
     "Name",
     "AssetType",
-    $($types.$t)    
+    $($types.$t)
     "Status.Name",
     "Status.RollupState",
     "Super.Number",
     "Super.Name",
-    "Super.Scope.Name",
-    "Super.Scope.Parent.Name",
     "Super.AssetType",
+    "Super.Category.Name",
     "Scope.Name",
     "Scope.Parent.Name",
     "Scope.Parent.Parent.Name",
@@ -88,6 +88,7 @@ foreach($rw in $rEpics[0]){
     $nre.ParentNumber = $rw."Super.Number"
     $nre.ParentName = $rw."Super.Name"
     $nre.ParentType = $rw."Super.AssetType"
+    $nre.ParentCategory = $rw."Super.Category.Name"
     $nre.Scope = $rw."Scope.Name"
     $nre.ParentScope = $rw."Scope.Parent.Name"
     $nre.GrandparentScope = $rw."Scope.Parent.Parent.Name"

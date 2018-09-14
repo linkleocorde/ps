@@ -11,7 +11,6 @@ $query = @"
     "Key",
     "Number",
     "Name",
-    "Category.Name",
     "AssetType",
     "Status.Name",
     "Status.RollupState",
@@ -30,10 +29,11 @@ $query = @"
     "Scope.Parent.Parent.Name",
     "Subs[AssetState!='Dead'].@Count"
   ],
-  "find": "EAPP",
-  "findin": "Scope.ParentAndUp.Name",
+  "filter": [
+    "Scope.ParentAndUp.Name": "EAAP"
+  ],
   "where": {
-    "Number": "E-29718"
+    "Number": "E-12685"
   }
 }
 "@
