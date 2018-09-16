@@ -10,8 +10,10 @@ $PostUri = 'https://www10.v1host.com/NIKE01a/query.v1'
 
 #Send to file
 $rptEpics = 'C:\Users\lleoco\Documents\My Tableau Repository\Datasources\EAPP-All.csv'
+$rptScope = 'C:\Users\lleoco\Documents\My Tableau Repository\Datasources\EAPP-Scope.csv'
 
 $dtE = New-Object System.Data.DataTable "EAPP"
+$dtS = New-Object System.Data.DataTable "Scope"
 
 #Define columns and add to tables
 [void]$dtE.Columns.Add("ID",[string])
@@ -35,6 +37,11 @@ $dtE = New-Object System.Data.DataTable "EAPP"
 [void]$dtE.Columns.Add("IsInactive",[string])
 [void]$dtE.Columns.Add("IsDead",[string])
 [void]$dtE.Columns.Add("IsDeleted",[string])
+
+[void]$dtS.Columns.Add("ID",[string])
+[void]$dtS.Columns.Add("Key",[string])
+[void]$dtS.Columns.Add("Number",[string])
+[void]$dtS.Columns.Add("Scope",[string])
 
 
 $types = @{Epic = '"Category.Name",'; Story = '"AssetType",'; Defect = '"AssetType",'}
@@ -67,13 +74,27 @@ $qEpics = @"
     "IsDeleted"
   ],
   "find": "EAPP",
-  "findin": "Scope.ParentAndUp.Name"
+  "findin": "Scope.ParentMeAndUp.Name"
 }
 "@
 #write-host $qEpics}
 
+$qScope = @"
+{
+  "from": "$($t)",
+  "select": [
+    "Key",
+    "Number",
+    "Scope.Name"
+  ],
+  "find": "FY19 Q2",
+  "findin": "Scope.Name"
+}
+"@
+
 #Run query on the API
 $rEpics = Invoke-RestMethod -Uri $PostUri -Body $qEpics -Headers $reqHeaders -Method POST -ContentType 'application/json'
+$rScope = Invoke-RestMethod -Uri $PostUri -Body $qScope -Headers $reqHeaders -Method POST -ContentType 'application/json'
 
 foreach($rw in $rEpics[0]){
     $nre = $dtE.NewRow()
@@ -102,11 +123,25 @@ foreach($rw in $rEpics[0]){
     $dtE.Rows.Add($nre)
 }
 
+foreach($rw in $rScope[0]){
+    $nrs = $dtS.NewRow()
+    $nrs.ID = $rw."_oid"
+    $nrs.Key = $rw."Key"
+    $nrs.Number = $rw."Number"
+    $nrs.Scope = $rw."Scope.Name"
+
+    $dtS.Rows.Add($nrs)
+}
+
 }
 #$dtE | Format-Table -AutoSize
 
 Write-Host Exporting $rptEpics
 $dtE | Export-Csv -Path $rptEpics -NoTypeInformation
+
+
+Write-Host Exporting $rptScope
+$dtS | Export-Csv -Path $rptScope -NoTypeInformation
 
 $endtime = get-date
 $runtime = $endtime - $starttime
